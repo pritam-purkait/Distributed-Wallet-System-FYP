@@ -2,6 +2,7 @@ package com.example.shardedsagawallet.controllers;
 
 import java.math.BigDecimal;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor
 @RequestMapping("/wallets")
 @Slf4j
+@Tag(name = "Wallet API", description = " create wallet, get wallet by id, get wallet balance" )
 public class WalletController {
 
     @Autowired

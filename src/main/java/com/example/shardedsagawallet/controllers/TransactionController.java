@@ -5,6 +5,7 @@ import com.example.shardedsagawallet.entities.Wallet;
 import com.example.shardedsagawallet.repositories.UserRepository;
 import com.example.shardedsagawallet.services.UserService;
 import com.example.shardedsagawallet.services.WalletService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/transactions")
+@Tag(name = "Transaction API", description = " create transaction, get all transactions" )
 public class TransactionController {
 
     @Autowired

@@ -3,6 +3,7 @@ package com.example.shardedsagawallet.controllers;
 import com.example.shardedsagawallet.entities.User;
 import com.example.shardedsagawallet.services.UserService;
 import com.example.shardedsagawallet.utils.JwtUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/public")
+@Tag(name = "Public API", description = "Public Controller - helthCheck, register, login" )
 public class PublicController {
 
     @Autowired
@@ -30,9 +32,10 @@ public class PublicController {
     @Autowired
     private JwtUtil jwtUtil;
 
+
     @RequestMapping("/health")
     public String health() {
-        return "OK";
+        return "Server is running.........";
     }
     @PostMapping("/register")
     public ResponseEntity<User> createUser(@RequestBody User user) {
