@@ -37,6 +37,21 @@ public class WalletController {
     @PostMapping
     public ResponseEntity<Wallet> createWallet(@RequestBody CreateWalletRequestDTO request) {
         try {
+            if (request.getUserId() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
+
+            try {
+                Wallet existingWallet = walletService.getWalletByUserId(request.getUserId());
+                if (existingWallet != null) {
+                    log.info("Wallet already exists for user {}", request.getUserId());
+                    return ResponseEntity.status(HttpStatus.OK).body(existingWallet);
+                }
+            } catch (Exception e) {
+
+                log.info("No wallet found for user {}, creating new wallet", request.getUserId());
+            }
+
             Wallet newWallet = walletService.createWallet(request.getUserId());
             return ResponseEntity.status(HttpStatus.CREATED).body(newWallet);
         } catch (Exception e) {
@@ -63,13 +78,13 @@ public class WalletController {
         Wallet wallet = walletService.getWalletByUserId(userId);
         return ResponseEntity.ok(wallet);
     }
-    
+
     @PostMapping("/{userId}/credit")
     public ResponseEntity<Wallet> creditWallet(@PathVariable Long userId, @RequestBody CreditWalletRequestDTO request) {
         walletService.credit(userId, request.getAmount());
         Wallet wallet = walletService.getWalletByUserId(userId);
         return ResponseEntity.ok(wallet);
     }
-    
-    
+
+
 }
