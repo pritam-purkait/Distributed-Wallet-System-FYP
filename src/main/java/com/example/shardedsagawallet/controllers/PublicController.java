@@ -33,7 +33,7 @@ public class PublicController {
     private JwtUtil jwtUtil;
 
 
-    @RequestMapping("/health")
+    @GetMapping("/health")
     public String health() {
         return "Server is running.........";
     }
@@ -48,19 +48,19 @@ public class PublicController {
         try {
             String username = loginRequest.get("name");
             String password = loginRequest.get("password");
-            
-            System.out.println("Login attempt - Username: " + username + ", Password: " + password);
-            
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
             );
             
             String token = jwtUtil.generateToken(username);
+            User user = userService.findByName(username);
             
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
             response.put("message", "Login successful");
-            
+            response.put("username", user.getName());
+            response.put("userid", String.valueOf(user.getId()));
+           
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             System.out.println("Login failed: " + e.getMessage());

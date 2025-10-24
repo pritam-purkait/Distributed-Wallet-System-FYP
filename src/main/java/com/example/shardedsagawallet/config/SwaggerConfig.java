@@ -29,4 +29,4 @@ public class SwaggerConfig {
     }
 
 }
-//http://localhost:8080/journal/swagger-ui/index.html#/
+//http://localhost:8080/swagger-ui/index.html#/

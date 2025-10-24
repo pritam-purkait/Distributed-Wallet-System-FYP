@@ -37,4 +37,10 @@ public class UserService {
     public List<User> getUsersByName(String name) {
         return userRepository.findByNameContainingIgnoreCase(name);
     }
+
+    public User findByName(String username){
+        User user = userRepository.findByName(username);
+         return user;
+    }
+
 }
