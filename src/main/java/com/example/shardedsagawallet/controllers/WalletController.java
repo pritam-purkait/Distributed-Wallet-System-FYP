@@ -23,12 +23,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/wallets")
 @Slf4j
-@Tag(name = "Wallet API", description = " create wallet, get wallet by id, get wallet balance" )
+@Tag(name = "Wallet API", description = " create wallet, get wallet by id, get wallet balance")
 public class WalletController {
 
     @Autowired
@@ -72,6 +71,15 @@ public class WalletController {
         return ResponseEntity.ok(balance);
     }
 
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<Wallet> getWalletByUserId(@PathVariable Long userId) {
+        Wallet wallet = walletService.getWalletByUserId(userId);
+        if (wallet == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(wallet);
+    }
+
     @PostMapping("/{userId}/debit")
     public ResponseEntity<Wallet> debitWallet(@PathVariable Long userId, @RequestBody DebitWalletRequestDTO request) {
         walletService.debit(userId, request.getAmount());
@@ -85,6 +93,5 @@ public class WalletController {
         Wallet wallet = walletService.getWalletByUserId(userId);
         return ResponseEntity.ok(wallet);
     }
-
 
 }
