@@ -40,15 +40,10 @@ public class WalletController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
             }
 
-            try {
-                Wallet existingWallet = walletService.getWalletByUserId(request.getUserId());
-                if (existingWallet != null) {
-                    log.info("Wallet already exists for user {}", request.getUserId());
-                    return ResponseEntity.status(HttpStatus.OK).body(existingWallet);
-                }
-            } catch (Exception e) {
-
-                log.info("No wallet found for user {}, creating new wallet", request.getUserId());
+            Wallet existingWallet = walletService.getWalletByUserId(request.getUserId());
+            if (existingWallet != null) {
+                log.info("Wallet already exists for user {}", request.getUserId());
+                return ResponseEntity.status(HttpStatus.OK).body(existingWallet);
             }
 
             Wallet newWallet = walletService.createWallet(request.getUserId());
@@ -59,13 +54,13 @@ public class WalletController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{WalletId}")
     public ResponseEntity<Wallet> getWalletById(@PathVariable Long id) {
         Wallet wallet = walletService.getWalletById(id);
         return ResponseEntity.ok(wallet);
     }
 
-    @GetMapping("/{id}/balance")
+    @GetMapping("/{walletId}/balance")
     public ResponseEntity<BigDecimal> getWalletBalance(@PathVariable Long id) {
         BigDecimal balance = walletService.getWalletBalance(id);
         return ResponseEntity.ok(balance);

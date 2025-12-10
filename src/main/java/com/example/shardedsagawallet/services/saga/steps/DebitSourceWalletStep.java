@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DebitSourceWalletStep implements SagaStepInterface {
 
     private final WalletRepository walletRepository;
-    
+
     @Override
     @Transactional
     public boolean execute(SagaContext context) {
@@ -36,7 +36,7 @@ public class DebitSourceWalletStep implements SagaStepInterface {
         context.put("originalSourceWalletBalance", wallet.getBalance());
         // TODO: Once the context is updated in memory, we need to update the context in the database
 
-        walletRepository.updateBalanceByUserId(fromWalletId, wallet.getBalance().subtract(amount));
+        walletRepository.updateBalanceByUserId(wallet.getUserId(), wallet.getBalance().subtract(amount));
 
         log.info("Wallet saved with balance {}", wallet.getBalance());
         context.put("sourceWalletBalanceAfterDebit", wallet.getBalance());
@@ -44,7 +44,7 @@ public class DebitSourceWalletStep implements SagaStepInterface {
 
         log.info("Debit source wallet step executed successfully");
 
-        
+
         return true;
     }
 
@@ -64,14 +64,14 @@ public class DebitSourceWalletStep implements SagaStepInterface {
         // TODO: Once the context is updated in memory, we need to update the context in the database
 
 
-        walletRepository.updateBalanceByUserId(fromWalletId, wallet.getBalance().add(amount));
+        walletRepository.updateBalanceByUserId(wallet.getUserId(), wallet.getBalance().add(amount));
         log.info("Wallet saved with balance {}", wallet.getBalance());
         context.put("sourceWalletBalanceAfterCreditCompensation", wallet.getBalance());
         // TODO: Once the context is updated in memory, we need to update the context in the database
 
         log.info("Compensating source wallet step executed successfully");
 
-        
+
         return true;
     }
 

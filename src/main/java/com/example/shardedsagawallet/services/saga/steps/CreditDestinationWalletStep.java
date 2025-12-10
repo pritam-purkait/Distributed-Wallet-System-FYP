@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class CreditDestinationWalletStep implements SagaStepInterface {
-    
+
     private final WalletRepository walletRepository;
 
     @Override
@@ -37,9 +37,9 @@ public class CreditDestinationWalletStep implements SagaStepInterface {
         log.info("Wallet fetched with balance {}", wallet.getBalance());
         context.put("originalToWalletBalance", wallet.getBalance());
         // TODO: Once the context is updated in memory, we need to update the context in the database
-        
+
         // Step 3: Credit the destination wallet
-        walletRepository.updateBalanceByUserId(toWalletId, wallet.getBalance().add(amount));
+        walletRepository.updateBalanceByUserId(wallet.getUserId(), wallet.getBalance().add(amount));
         log.info("Wallet saved with balance {}", wallet.getBalance());
         context.put("toWalletBalanceAfterCredit", wallet.getBalance());
         // TODO: Once the context is updated in memory, we need to update the context in the database
@@ -62,10 +62,10 @@ public class CreditDestinationWalletStep implements SagaStepInterface {
         .orElseThrow(() -> new RuntimeException("Wallet not found"));
 
         log.info("Wallet fetched with balance {}", wallet.getBalance());
-        
+
         // Step 3: Credit the destination wallet
-        
-        walletRepository.updateBalanceByUserId(toWalletId, wallet.getBalance().subtract(amount));
+
+        walletRepository.updateBalanceByUserId(wallet.getUserId(), wallet.getBalance().subtract(amount));
         log.info("Wallet saved with balance {}", wallet.getBalance());
         context.put("toWalletBalanceAfterCreditCompensation", wallet.getBalance());
         // TODO: Once the context is updated in memory, we need to update the context in the database
