@@ -26,6 +26,9 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_name")//, nullable = false
+    private String name;
+
     @Column(name = "from_wallet_id", nullable = false)
     private Long fromWalletId;
 

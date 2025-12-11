@@ -55,14 +55,14 @@ public class WalletController {
     }
 
     @GetMapping("/{WalletId}")
-    public ResponseEntity<Wallet> getWalletById(@PathVariable Long id) {
-        Wallet wallet = walletService.getWalletById(id);
+    public ResponseEntity<Wallet> getWalletById(@PathVariable Long WalletId) {
+        Wallet wallet = walletService.getWalletById(WalletId);
         return ResponseEntity.ok(wallet);
     }
 
     @GetMapping("/{walletId}/balance")
-    public ResponseEntity<BigDecimal> getWalletBalance(@PathVariable Long id) {
-        BigDecimal balance = walletService.getWalletBalance(id);
+    public ResponseEntity<BigDecimal> getWalletBalance(@PathVariable Long WalletId) {
+        BigDecimal balance = walletService.getWalletBalance(WalletId);
         return ResponseEntity.ok(balance);
     }
 

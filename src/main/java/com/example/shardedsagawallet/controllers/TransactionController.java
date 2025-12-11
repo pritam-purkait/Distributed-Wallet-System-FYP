@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.shardedsagawallet.dtos.TransactionResponseDTO;
 import com.example.shardedsagawallet.dtos.TransferRequestDTO;
 import com.example.shardedsagawallet.dtos.TransferResponseDTO;
 import com.example.shardedsagawallet.services.TransactionService;
@@ -79,7 +80,7 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Transaction>> getAllTransactions() {
+    public ResponseEntity<List<TransactionResponseDTO>> getAllTransactions() {
         try {
             Authentication authentication = SecurityContextHolder
                     .getContext().getAuthentication();
@@ -92,7 +93,9 @@ public class TransactionController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
             Long userId = user.getId();
-            System.out.println("User ID: " + userId);
+            log.info("User ID: {}", userId);
+            String userName = userService.getUserById(userId).getName();
+            log.info("User name: {}", userName);
 
             List<Wallet> userWallets = walletService.getWalletsByUserId(userId);
             System.out.println("Found " + userWallets.size() + " wallets for user");
@@ -105,8 +108,50 @@ public class TransactionController {
                 allTransactions.addAll(walletTransactions);
             }
 
-            System.out.println("Returning " + allTransactions.size() + " transactions");
-            return ResponseEntity.ok(allTransactions);
+            // Convert Transaction entities to TransactionResponseDTO with username
+            List<TransactionResponseDTO> transactionResponseDTOs = allTransactions.stream()
+                .map(transaction -> {
+                    // Get the recipient's username
+                    String recipientUsername = "";
+                    try {
+                        Wallet toWallet = walletService.getWalletById(transaction.getToWalletId());
+                        if (toWallet != null) {
+                            User toUser = userService.getUserById(toWallet.getUserId());
+                            if (toUser != null) {
+                                recipientUsername = toUser.getName();
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error("Error getting recipient username", e);
+                    }
+
+                    // Determine transaction type based on user perspective
+                    com.example.shardedsagawallet.entities.TransactionType transactionType;
+                    boolean isUserSender = userWallets.stream().anyMatch(wallet -> wallet.getId().equals(transaction.getFromWalletId()));
+                    
+                    if (isUserSender) {
+                        transactionType = com.example.shardedsagawallet.entities.TransactionType.TRANSFER;
+                    } else {
+                        transactionType = com.example.shardedsagawallet.entities.TransactionType.RECEIVED;
+                    }
+
+                    return TransactionResponseDTO.builder()
+                        .id(transaction.getId())
+                        .userName(userName)
+                        .fromWalletId(transaction.getFromWalletId())
+                        .toWalletId(transaction.getToWalletId())
+                        .toUsername(recipientUsername)
+                        .amount(transaction.getAmount())
+                        .status(transaction.getStatus())
+                        .type(transactionType)
+                        .description(transaction.getDescription())
+                        .sagaInstanceId(transaction.getSagaInstanceId())
+                        .build();
+                })
+                .collect(java.util.stream.Collectors.toList());
+
+            System.out.println("Returning " + transactionResponseDTOs.size() + " transactions");
+            return ResponseEntity.ok(transactionResponseDTOs);
         } catch (Exception e) {
             System.out.println("Error getting transactions: " + e.getMessage());
             e.printStackTrace();
